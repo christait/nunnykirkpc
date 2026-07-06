@@ -15,16 +15,24 @@ GitHub → **Settings → Developer settings → OAuth Apps → New OAuth App**:
 Click **Register**, then **Generate a new client secret**. Keep the **Client ID** and
 **Client secret**.
 
-### 2. Deploy the Worker (Cloudflare dashboard, no tools needed)
-Cloudflare → **Workers & Pages → Create → Create Worker**. Name it e.g.
-`nunnykirk-oauth`. Click **Edit code**, delete the sample, paste the contents of
-`worker.js`, then **Deploy**. Note its URL, e.g.
-`https://nunnykirk-oauth.<account>.workers.dev`.
+### 2. Deploy the Worker — pick ONE method
 
-### 3. Add the two variables
-On the Worker → **Settings → Variables and Secrets** → add:
+**A) Cloudflare dashboard (no tools):** Cloudflare → **Workers & Pages → Create →
+Create Worker**. Name it `nunnykirk-oauth`. Click **Edit code**, delete the sample,
+paste the contents of `worker.js`, then **Deploy**. Note its URL, e.g.
+`https://nunnykirk-oauth.<account>.workers.dev`. Then add the two variables under
+**Settings → Variables and Secrets**:
 - `OAUTH_CLIENT_ID` — the Client ID from step 1
 - `OAUTH_CLIENT_SECRET` — the Client secret (tick **Encrypt**)
+
+**B) Wrangler CLI (uses `wrangler.toml` in this folder):**
+```bash
+cd oauth-worker
+npx wrangler login
+npx wrangler deploy                            # prints the Worker URL
+npx wrangler secret put OAUTH_CLIENT_ID        # paste Client ID
+npx wrangler secret put OAUTH_CLIENT_SECRET    # paste Client secret
+```
 
 Then go back to the GitHub OAuth App and make sure the callback URL is
 `https://<your-worker-host>/callback`.

@@ -1,0 +1,9 @@
+# Cloudflare Worker config for the /admin/ OAuth broker.
+# Deploy with:  cd oauth-worker && npx wrangler deploy
+name = "nunnykirk-oauth"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+# Do NOT put the client id/secret here. Set them as encrypted secrets after deploy:
+#   npx wrangler secret put OAUTH_CLIENT_ID
+#   npx wrangler secret put OAUTH_CLIENT_SECRET
