@@ -6,9 +6,9 @@
 # then set base_url + auth_endpoint below to match your Worker's URL.
 backend:
   name: github
-  repo: christait/nunnykirkpc # TODO: confirm GitHub owner/repo
+  repo: christait/nunnykirkpc
   branch: main
-  base_url: https://REPLACE-WITH-YOUR-WORKER.workers.dev # TODO: your OAuth Worker URL
+  base_url: https://nunnykirk.chris-ef3.workers.dev
   auth_endpoint: auth
 
 # While developing locally you can run `npx decap-server` and switch to:
