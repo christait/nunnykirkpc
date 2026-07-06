@@ -1,0 +1,31 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  frontmatter: {
+    title: string;
+    description?: string;
+    eyebrow?: string;
+  };
+}
+
+const { frontmatter } = Astro.props;
+---
+
+<BaseLayout title={frontmatter.title} description={frontmatter.description}>
+  <section class="section">
+    <div class="container prose">
+      {frontmatter.eyebrow && <span class="eyebrow">{frontmatter.eyebrow}</span>}
+      <h1>{frontmatter.title}</h1>
+      {frontmatter.description && <p class="muted lead">{frontmatter.description}</p>}
+      <hr />
+      <slot />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .lead {
+    font-size: 1.15rem;
+  }
+</style>

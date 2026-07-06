@@ -1,0 +1,59 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import siteConfig from '../config/site.json';
+
+const councillors = (await getCollection('councillors')).sort(
+  (a, b) => (a.data.order ?? 99) - (b.data.order ?? 99)
+);
+
+const rendered = await Promise.all(
+  councillors.map(async (c) => ({ entry: c, ...(await render(c)) }))
+);
+
+const { contact } = siteConfig;
+---
+
+<BaseLayout title="People" description="Councillors and the Clerk of Nunnykirk Parish Council.">
+  <section class="section">
+    <div class="container">
+      <span class="eyebrow">Your council</span>
+      <h1>Councillors</h1>
+      <p class="muted">The councillors who serve the parish of Nunnykirk.</p>
+
+      <div class="grid cols-2" style="margin-top:2rem;">
+        {rendered.map(({ entry, Content }) => (
+          <article class="card">
+            <p class="eyebrow" style="margin-bottom:0.4rem;">{entry.data.role}</p>
+            <h3 style="margin-bottom:0.25rem;">{entry.data.name}</h3>
+            {entry.data.email && (
+              <p class="muted small" style="margin-bottom:0.5rem;">
+                <a href={`mailto:${entry.data.email}`}>{entry.data.email}</a>
+              </p>
+            )}
+            <Content />
+          </article>
+        ))}
+      </div>
+
+      <h2 style="margin-top:3rem;">Clerk to the Council</h2>
+      <article class="card" style="max-width:32rem;">
+        <p class="eyebrow" style="margin-bottom:0.4rem;">{contact.clerkTitle}</p>
+        <h3 style="margin-bottom:0.25rem;">{contact.clerkName}</h3>
+        <p class="muted small" style="margin-bottom:0;">
+          <a href={`mailto:${contact.email}`}>{contact.email}</a><br />
+          {contact.phone}
+        </p>
+      </article>
+      <p class="muted small" style="margin-top:1rem;">
+        The Clerk is the council's proper officer. Please direct enquiries about
+        meetings, agendas, minutes and general parish matters to the Clerk — see the
+        <a href="/contact/">contact page</a>.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .small { font-size: 0.85rem; }
+</style>

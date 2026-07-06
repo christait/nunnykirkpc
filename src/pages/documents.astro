@@ -1,0 +1,70 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const docs = await getCollection('documents');
+
+// Preferred display order for categories; any others are appended alphabetically.
+const preferred = ['Policies & procedures', 'Finance', 'Public notices', 'Other'];
+const categories = Array.from(new Set(docs.map((d) => d.data.category))).sort((a, b) => {
+  const ia = preferred.indexOf(a);
+  const ib = preferred.indexOf(b);
+  if (ia !== -1 && ib !== -1) return ia - ib;
+  if (ia !== -1) return -1;
+  if (ib !== -1) return 1;
+  return a.localeCompare(b);
+});
+
+const byCategory = categories.map((cat) => ({
+  category: cat,
+  items: docs
+    .filter((d) => d.data.category === cat)
+    .sort(
+      (a, b) =>
+        (a.data.order ?? 99) - (b.data.order ?? 99) ||
+        (b.data.date?.getTime() ?? 0) - (a.data.date?.getTime() ?? 0)
+    ),
+}));
+
+const fmtDate = (d: Date) =>
+  d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<BaseLayout title="Documents" description="Council policies, financial documents and public notices for Nunnykirk Parish Council.">
+  <section class="section">
+    <div class="container">
+      <span class="eyebrow">Documents</span>
+      <h1>Council documents</h1>
+      <p class="muted">
+        Policies, financial records and public notices published by the council.
+        Minutes and agendas are on the <a href="/meetings/">Meetings</a> page.
+      </p>
+
+      {docs.length === 0 ? (
+        <p class="muted" style="margin-top:2rem;">No documents have been published yet.</p>
+      ) : (
+        byCategory.map((group) => (
+          <section style="margin-top:2.5rem;">
+            <h2>{group.category}</h2>
+            <div class="table-scroll">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>Document</th><th>Date</th><th>Download</th></tr>
+                </thead>
+                <tbody>
+                  {group.items.map((d) => (
+                    <tr>
+                      <td>{d.data.title}</td>
+                      <td class="muted">{d.data.date ? fmtDate(d.data.date) : '—'}</td>
+                      <td><a href={d.data.file}>Download (PDF)</a></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        ))
+      )}
+    </div>
+  </section>
+</BaseLayout>

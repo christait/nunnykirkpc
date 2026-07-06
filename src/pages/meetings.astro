@@ -1,0 +1,83 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const all = await getCollection('meetings', ({ data }) => !data.draft);
+const now = Date.now();
+
+const upcoming = all
+  .filter((m) => m.data.date.getTime() >= now - 86400000)
+  .sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
+
+const past = all
+  .filter((m) => m.data.date.getTime() < now - 86400000)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const fmtDate = (d: Date) =>
+  d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' });
+const fmtTime = (d: Date) =>
+  d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+---
+
+<BaseLayout title="Meetings" description="Meeting dates, agendas and minutes for Nunnykirk Parish Council.">
+  <section class="section">
+    <div class="container">
+      <span class="eyebrow">Meetings</span>
+      <h1>Meeting dates, agendas &amp; minutes</h1>
+      <p class="muted">
+        Agendas are published before each meeting; approved minutes are added afterwards.
+        Members of the public are welcome to attend.
+      </p>
+
+      <h2 style="margin-top:2rem;">Upcoming meetings</h2>
+      {upcoming.length === 0 ? (
+        <p class="muted">No meetings are currently scheduled. Please check back soon.</p>
+      ) : (
+        <div class="table-scroll">
+          <table class="doc-table">
+            <thead>
+              <tr><th>Date</th><th>Meeting</th><th>Where</th><th>Agenda</th></tr>
+            </thead>
+            <tbody>
+              {upcoming.map((m) => (
+                <tr>
+                  <td>{fmtDate(m.data.date)}<br /><span class="muted small">{fmtTime(m.data.date)}</span></td>
+                  <td>{m.data.title}</td>
+                  <td class="muted">{m.data.location ?? '—'}</td>
+                  <td>{m.data.agenda ? <a href={m.data.agenda}>Agenda (PDF)</a> : <span class="muted">To follow</span>}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <h2 style="margin-top:3rem;">Past meetings &amp; minutes</h2>
+      {past.length === 0 ? (
+        <p class="muted">Minutes of past meetings will appear here.</p>
+      ) : (
+        <div class="table-scroll">
+          <table class="doc-table">
+            <thead>
+              <tr><th>Date</th><th>Meeting</th><th>Agenda</th><th>Minutes</th></tr>
+            </thead>
+            <tbody>
+              {past.map((m) => (
+                <tr>
+                  <td>{fmtDate(m.data.date)}</td>
+                  <td>{m.data.title}</td>
+                  <td>{m.data.agenda ? <a href={m.data.agenda}>Agenda (PDF)</a> : <span class="muted">—</span>}</td>
+                  <td>{m.data.minutes ? <a href={m.data.minutes}>Minutes (PDF)</a> : <span class="muted">To be approved</span>}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .small { font-size: 0.85rem; }
+</style>

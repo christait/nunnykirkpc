@@ -1,0 +1,21 @@
+{
+  "title": "Nunnykirk Parish Council",
+  "tagline": "Serving the parish of Nunnykirk, Northumberland",
+  "description": "Official website of Nunnykirk Parish Council — councillors, meeting dates, agendas, minutes and documents for the parish of Nunnykirk, Northumberland.",
+  "nav": [
+    { "label": "Home", "href": "/" },
+    { "label": "Meetings", "href": "/meetings/" },
+    { "label": "Documents", "href": "/documents/" },
+    { "label": "People", "href": "/people/" },
+    { "label": "History", "href": "/history/" },
+    { "label": "Contact", "href": "/contact/" }
+  ],
+  "contact": {
+    "clerkName": "Sue Rollitt",
+    "clerkTitle": "Clerk to Nunnykirk Parish Council",
+    "email": "clerk@nunnykirkpc.gov.uk",
+    "phone": "01670 000000",
+    "address": "Nunnykirk, Northumberland",
+    "officeHours": "Monday to Friday, 9:00am – 5:00pm"
+  }
+}

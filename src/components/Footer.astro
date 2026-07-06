@@ -1,0 +1,105 @@
+---
+import siteConfig from '../config/site.json';
+const { contact } = siteConfig;
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <h3 class="footer-title">{siteConfig.title}</h3>
+      <p class="muted">{siteConfig.tagline}</p>
+      <p class="muted small">A local council serving residents of the parish of Nunnykirk in Northumberland.</p>
+    </div>
+    <div>
+      <h4 class="footer-title">Explore</h4>
+      <ul>
+        {siteConfig.nav.map((item) => (
+          <li><a href={item.href}>{item.label}</a></li>
+        ))}
+      </ul>
+    </div>
+    <div>
+      <h4 class="footer-title">Contact the Clerk</h4>
+      <p class="muted">
+        {contact.clerkName}<br />
+        <a href={`mailto:${contact.email}`}>{contact.email}</a><br />
+        {contact.phone}
+      </p>
+      <p class="muted small">For meeting information, agendas, minutes and general enquiries.</p>
+    </div>
+  </div>
+  <div class="container footer-base">
+    <p class="muted small">© {year} {siteConfig.title}. All rights reserved.</p>
+    <p class="muted small">
+      <a href="/admin/">Editor sign-in</a>
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: #1c231d;
+    color: #cdd4c7;
+    padding: 3rem 0 1.5rem;
+    margin-top: 4rem;
+  }
+
+  .site-footer h3,
+  .site-footer h4 {
+    color: #eef2e8;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-family: var(--font-sans);
+    font-weight: 700;
+  }
+
+  .footer-title {
+    margin-bottom: 0.6rem;
+  }
+
+  .footer-grid {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  }
+
+  .site-footer .muted {
+    color: #a8b0a2;
+  }
+
+  .small {
+    font-size: 0.85rem;
+  }
+
+  .site-footer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .site-footer ul li {
+    margin-bottom: 0.35rem;
+  }
+
+  .site-footer a {
+    color: #c9d6b8;
+    text-decoration: none;
+  }
+
+  .site-footer a:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+
+  .footer-base {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #2c332c;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+</style>

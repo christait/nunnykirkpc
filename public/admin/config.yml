@@ -1,0 +1,139 @@
+# Decap CMS configuration for Nunnykirk Parish Council
+# Docs: https://decapcms.org/docs/configuration-options/
+#
+# Sign-in uses GitHub via a small OAuth broker (a Cloudflare Worker).
+# See README.md → "CMS sign-in setup" for the one-time steps to deploy it and
+# then set base_url + auth_endpoint below to match your Worker's URL.
+backend:
+  name: github
+  repo: christait/nunnykirkpc # TODO: confirm GitHub owner/repo
+  branch: main
+  base_url: https://REPLACE-WITH-YOUR-WORKER.workers.dev # TODO: your OAuth Worker URL
+  auth_endpoint: auth
+
+# While developing locally you can run `npx decap-server` and switch to:
+#   local_backend: true
+
+site_url: https://nunnykirkpc.org.uk
+display_url: https://nunnykirkpc.org.uk
+logo_url: https://nunnykirkpc.org.uk/favicon.svg
+
+publish_mode: editorial_workflow
+
+# Uploaded files (PDFs, images) are stored here and served from /uploads.
+media_folder: public/uploads
+public_folder: /uploads
+
+collections:
+  # ---- Meetings: dates + agenda/minutes PDFs ----
+  - name: meetings
+    label: Meetings
+    label_singular: Meeting
+    folder: src/content/meetings
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: md
+    format: yaml-frontmatter
+    summary: "{{title}} — {{date | date('YYYY-MM-DD')}}"
+    sortable_fields: [date, title]
+    fields:
+      - { name: title, label: Meeting title, widget: string, default: "Ordinary Meeting of the Council" }
+      - { name: date, label: Date & time, widget: datetime }
+      - { name: location, label: Location, widget: string, required: false }
+      - { name: agenda, label: Agenda (PDF), widget: file, required: false, hint: "Upload the agenda PDF for this meeting" }
+      - { name: minutes, label: Minutes (PDF), widget: file, required: false, hint: "Upload the approved minutes PDF once available" }
+      - { name: draft, label: Draft (hide from site), widget: boolean, default: false }
+      - { name: body, label: Notes (optional), widget: markdown, required: false }
+
+  # ---- Documents: policies, finance, notices ----
+  - name: documents
+    label: Documents
+    label_singular: Document
+    folder: src/content/documents
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: yaml-frontmatter
+    summary: "{{title}} — {{category}}"
+    sortable_fields: [category, title, date]
+    fields:
+      - { name: title, label: Title, widget: string }
+      - name: category
+        label: Category
+        widget: select
+        options: ["Policies & procedures", "Finance", "Public notices", "Other"]
+        default: "Policies & procedures"
+      - { name: file, label: File (PDF), widget: file, hint: "Upload the document PDF" }
+      - { name: date, label: Document date, widget: datetime, required: false, date_format: "YYYY-MM-DD", time_format: false }
+      - { name: order, label: Sort order (lower shows first), widget: number, required: false, value_type: int, default: 99 }
+
+  # ---- Councillors: the People page ----
+  - name: councillors
+    label: Councillors
+    label_singular: Councillor
+    folder: src/content/councillors
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: yaml-frontmatter
+    sortable_fields: [order, name]
+    fields:
+      - { name: name, label: Name, widget: string }
+      - { name: role, label: Role, widget: string, default: "Councillor", hint: "e.g. Chair, Vice-Chair, Councillor" }
+      - { name: order, label: Display order, widget: number, required: false, value_type: int, default: 99 }
+      - { name: email, label: Email (optional), widget: string, required: false }
+      - { name: photo, label: Photograph (optional), widget: image, required: false }
+      - { name: body, label: Notes / biography (optional), widget: markdown, required: false }
+
+  # ---- Static pages: Home intro & History ----
+  - name: pages
+    label: Pages
+    label_singular: Page
+    files:
+      - name: home
+        label: Home page intro
+        file: src/content/pages/home.md
+        extension: md
+        format: yaml-frontmatter
+        fields:
+          - { name: title, label: Title, widget: string }
+          - { name: description, label: Description, widget: text, required: false }
+          - { name: body, label: Introduction text, widget: markdown }
+      - name: history
+        label: History page
+        file: src/content/pages/history.md
+        extension: md
+        format: yaml-frontmatter
+        fields:
+          - { name: title, label: Title, widget: string }
+          - { name: eyebrow, label: Eyebrow / kicker, widget: string, required: false }
+          - { name: description, label: Description, widget: text, required: false }
+          - { name: body, label: Body, widget: markdown }
+
+  # ---- Site settings: title, tagline, nav, contact details ----
+  - name: settings
+    label: Site settings
+    files:
+      - name: site
+        label: Site & contact details
+        file: src/config/site.json
+        fields:
+          - { name: title, label: Site title, widget: string }
+          - { name: tagline, label: Tagline, widget: string }
+          - { name: description, label: Site description (for search engines), widget: text }
+          - name: contact
+            label: Contact details (the Clerk)
+            widget: object
+            fields:
+              - { name: clerkName, label: Clerk name, widget: string }
+              - { name: clerkTitle, label: Clerk title, widget: string }
+              - { name: email, label: Email, widget: string }
+              - { name: phone, label: Telephone, widget: string }
+              - { name: address, label: Postal address, widget: string }
+              - { name: officeHours, label: Office hours, widget: string }
+          - name: nav
+            label: Navigation menu
+            widget: list
+            fields:
+              - { name: label, label: Label, widget: string }
+              - { name: href, label: Link, widget: string }

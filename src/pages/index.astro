@@ -1,0 +1,143 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import siteConfig from '../config/site.json';
+
+const now = Date.now();
+
+const meetings = (await getCollection('meetings', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.date.getTime() - b.data.date.getTime()
+);
+const nextMeeting = meetings.find((m) => m.data.date.getTime() >= now - 86400000);
+
+const documents = (await getCollection('documents'))
+  .sort((a, b) => (b.data.date?.getTime() ?? 0) - (a.data.date?.getTime() ?? 0))
+  .slice(0, 4);
+
+const intro = await getEntry('pages', 'home');
+const IntroContent = intro ? (await render(intro)).Content : null;
+
+const fmtDate = (d: Date) =>
+  d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+const fmtTime = (d: Date) =>
+  d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+---
+
+<BaseLayout>
+  <section class="hero">
+    <div class="container hero-inner">
+      <span class="eyebrow">{siteConfig.tagline}</span>
+      <h1>{siteConfig.title}</h1>
+      {IntroContent ? (
+        <div class="hero-lead"><IntroContent /></div>
+      ) : (
+        <p class="hero-lead">Welcome to the official website of {siteConfig.title}.</p>
+      )}
+      <div class="hero-actions">
+        <a class="button" href="/meetings/">Meetings &amp; dates</a>
+        <a class="button secondary" href="/contact/">Contact the Clerk</a>
+      </div>
+    </div>
+  </section>
+
+  {nextMeeting && (
+    <section class="section alt">
+      <div class="container next-meeting">
+        <span class="eyebrow">Next meeting</span>
+        <h2>{nextMeeting.data.title}</h2>
+        <p class="muted">
+          {fmtDate(nextMeeting.data.date)} at {fmtTime(nextMeeting.data.date)}
+          {nextMeeting.data.location ? ` · ${nextMeeting.data.location}` : ''}
+        </p>
+        <p>
+          {nextMeeting.data.agenda ? (
+            <a class="button" href={nextMeeting.data.agenda}>Download the agenda (PDF)</a>
+          ) : (
+            <span class="muted">Agenda to follow.</span>
+          )}
+          {' '}<a href="/meetings/">All meeting dates →</a>
+        </p>
+      </div>
+    </section>
+  )}
+
+  <section class="section">
+    <div class="container grid cols-3">
+      <article class="card">
+        <span class="eyebrow">Meetings</span>
+        <h3>Dates, agendas &amp; minutes</h3>
+        <p class="muted">When the council meets, with agendas beforehand and approved minutes afterwards.</p>
+        <p><a href="/meetings/">View meetings →</a></p>
+      </article>
+      <article class="card">
+        <span class="eyebrow">Documents</span>
+        <h3>Policies &amp; finance</h3>
+        <p class="muted">Standing orders, financial regulations, public notices and other council documents.</p>
+        <p><a href="/documents/">View documents →</a></p>
+      </article>
+      <article class="card">
+        <span class="eyebrow">People</span>
+        <h3>Your councillors</h3>
+        <p class="muted">The councillors who serve the parish, and how to reach the Clerk.</p>
+        <p><a href="/people/">Meet the council →</a></p>
+      </article>
+    </div>
+  </section>
+
+  {documents.length > 0 && (
+    <section class="section alt">
+      <div class="container">
+        <span class="eyebrow">Latest</span>
+        <h2>Recent documents</h2>
+        <ul class="doc-list">
+          {documents.map((d) => (
+            <li>
+              <a href={d.data.file}>{d.data.title}</a>
+              <span class="muted small"> · {d.data.category}</span>
+            </li>
+          ))}
+        </ul>
+        <p style="margin-top:1.25rem"><a href="/documents/">All documents →</a></p>
+      </div>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  .hero {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(247, 245, 239, 0.95)),
+      radial-gradient(circle at 20% 0%, rgba(169, 130, 47, 0.16), transparent 42%),
+      radial-gradient(circle at 80% 100%, rgba(47, 82, 51, 0.16), transparent 52%);
+    padding: 5rem 0 4rem;
+    border-bottom: 1px solid var(--colour-border);
+  }
+  .hero-inner {
+    max-width: 48rem;
+    text-align: center;
+  }
+  .hero-lead {
+    font-size: 1.2rem;
+    color: var(--colour-muted);
+  }
+  .hero-actions {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+  }
+  .next-meeting {
+    max-width: 44rem;
+  }
+  .doc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .doc-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--colour-border);
+  }
+  .small { font-size: 0.85rem; }
+</style>

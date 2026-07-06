@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import siteConfig from '../config/site.json';
+const { contact } = siteConfig;
+---
+
+<BaseLayout title="Contact" description="Contact Nunnykirk Parish Council and the Clerk.">
+  <section class="section">
+    <div class="container prose">
+      <span class="eyebrow">Get in touch</span>
+      <h1>Contact the council</h1>
+      <p class="muted">
+        For all enquiries — including meeting information, agendas, minutes, reporting
+        local issues, and requests for documents — please contact the Parish Clerk.
+      </p>
+
+      <h2>{contact.clerkTitle}</h2>
+      <p>
+        <strong>{contact.clerkName}</strong><br />
+        Email: <a href={`mailto:${contact.email}`}>{contact.email}</a><br />
+        Telephone: {contact.phone}<br />
+        {contact.address}
+      </p>
+      <p class="muted">{contact.officeHours}</p>
+    </div>
+  </section>
+</BaseLayout>
