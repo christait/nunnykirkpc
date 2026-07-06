@@ -35,7 +35,11 @@ collections:
     extension: md
     format: yaml-frontmatter
     summary: "{{title}} — {{date | date('YYYY-MM-DD')}}"
-    sortable_fields: [date, title]
+    sortable_fields:
+      fields: [date, title]
+      default:
+        field: date
+        direction: descending
     fields:
       - { name: title, label: Meeting title, widget: string, default: "Ordinary Meeting of the Council" }
       - { name: date, label: Date & time, widget: datetime }
@@ -55,7 +59,11 @@ collections:
     extension: md
     format: yaml-frontmatter
     summary: "{{title}} — {{category}}"
-    sortable_fields: [category, title, date]
+    sortable_fields:
+      fields: [date, category, title]
+      default:
+        field: date
+        direction: descending
     fields:
       - { name: title, label: Title, widget: string }
       - name: category
