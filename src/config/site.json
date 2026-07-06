@@ -7,7 +7,6 @@
     { "label": "Meetings", "href": "/meetings/" },
     { "label": "Documents", "href": "/documents/" },
     { "label": "People", "href": "/people/" },
-    { "label": "History", "href": "/history/" },
     { "label": "Contact", "href": "/contact/" }
   ],
   "contact": {
